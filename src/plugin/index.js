@@ -6,6 +6,10 @@ const { configure, synchronize } = require('./config');
 const { setup, fetch, versions, setEngineOptions } = require('./connector');
 const { defaultArgs, getProfilePath, validateConfig, validateLauncher } = require('./utils');
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 module.exports = class FingerprintPlugin {
   static create(launcher) {
     validateLauncher(launcher);
@@ -92,6 +96,8 @@ module.exports = class FingerprintPlugin {
       executablePath: `${path}/worker.exe`,
       args: [`--parent-process-id=${pid}`, `--unique-process-id=${id}`, ...defaultArgs({ ...options, ...config })],
     });
+
+    await delay(15000);
 
     await (useDefaultLauncher ? configure : this.configure.bind(this))(
       () => cleaner.include(pwd, pid, id),
